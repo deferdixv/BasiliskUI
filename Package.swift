@@ -9,8 +9,8 @@ let package = Package(
         .library(name: "BasiliskUI", targets: ["BasiliskUI"]),
     ],
     dependencies: [
-        .package(path: "../BasiliskCore"),
-        .package(path: "../MillariumCore"),
+        .package(url: "https://github.com/deferdixv/BasiliskCore.git", from: "1.0.0"),
+        .package(url: "https://github.com/deferdixv/MillariumCore.git", from: "1.0.0"),
     ],
     targets: [
         .target(
