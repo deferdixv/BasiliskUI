@@ -8,25 +8,37 @@
 
 //
 //  FileLinkDialog.swift
-//  BasiliskDesign
-//
-//  Dialog zum Verknüpfen einer Datei oder eines Links.
-//  Drei Zeilen: Beschreibung, Pfad/Link, Icon-Auswahl.
+//  BasiliskUI
 //
 
 import SwiftUI
 import AppKit
 
-struct FileLinkDialog: View {
-    @Binding var isPresented: Bool
+public struct FileLinkDialog: View {
 
-    @State private var title: String = ""
-    @State private var path: String = ""
-    @State private var icon: FileTypeIcon = .link
+    @Binding public var isPresented: Bool
 
-    var onSave: (_ title: String, _ path: String, _ icon: FileTypeIcon) -> Void
+    @State private var title: String
+    @State private var path: String
+    @State private var icon: FileTypeIcon
 
-    var body: some View {
+    public var onSave: (_ title: String, _ path: String, _ icon: FileTypeIcon) -> Void
+
+    public init(
+        isPresented: Binding<Bool>,
+        initialTitle: String = "",
+        initialPath: String = "",
+        initialIcon: FileTypeIcon = .link,
+        onSave: @escaping (String, String, FileTypeIcon) -> Void
+    ) {
+        self._isPresented = isPresented
+        self.onSave = onSave
+        _title = State(initialValue: initialTitle)
+        _path = State(initialValue: initialPath)
+        _icon = State(initialValue: initialIcon)
+    }
+
+    public var body: some View {
         VStack(alignment: .leading, spacing: BasiliskSpacing.lg) {
             Text("Datei verknüpfen")
                 .font(BasiliskFont.sectionTitle)
@@ -72,9 +84,7 @@ struct FileLinkDialog: View {
 
             HStack {
                 Spacer()
-                SecondaryButton("Abbrechen") {
-                    isPresented = false
-                }
+                SecondaryButton("Abbrechen") { isPresented = false }
                 PrimaryButton("Verknüpfen", icon: "link") {
                     onSave(title, path, icon)
                     isPresented = false
@@ -86,8 +96,6 @@ struct FileLinkDialog: View {
         .frame(width: 520)
         .background(BasiliskColor.background)
     }
-
-    // MARK: - Subviews
 
     private func row<Content: View>(_ label: String, @ViewBuilder content: () -> Content) -> some View {
         HStack(alignment: .firstTextBaseline, spacing: BasiliskSpacing.md) {
@@ -102,12 +110,9 @@ struct FileLinkDialog: View {
     private var iconPicker: some View {
         HStack(spacing: BasiliskSpacing.md) {
             ForEach(iconChoices, id: \.self) { choice in
-                Button {
-                    icon = choice
-                } label: {
+                Button { icon = choice } label: {
                     FileTypeIconView(
-                        type: choice,
-                        size: 22,
+                        type: choice, size: 22,
                         style: choice == icon ? .tinted : .plain
                     )
                     .opacity(choice == icon ? 1.0 : 0.45)
@@ -122,20 +127,16 @@ struct FileLinkDialog: View {
         [.video, .document, .folder, .link]
     }
 
-    // MARK: - Logic
-
     private func autoDetectIcon(for raw: String) {
         guard !raw.isEmpty else { return }
         let lower = raw.lowercased()
-
         if lower.hasPrefix("http://") || lower.hasPrefix("https://") {
             icon = .link
-        } else if lower.hasSuffix(".pdf") || lower.hasSuffix(".doc")
-                    || lower.hasSuffix(".docx") || lower.hasSuffix(".txt")
-                    || lower.hasSuffix(".md") {
+        } else if lower.hasSuffix(".pdf") {
             icon = .document
-        } else if lower.hasSuffix(".mp4") || lower.hasSuffix(".mov")
-                    || lower.hasSuffix(".m4v") || lower.hasSuffix(".mkv") {
+        } else if [".doc", ".docx", ".txt", ".md", ".rtf", ".pages"].contains(where: { lower.hasSuffix($0) }) {
+            icon = .document
+        } else if [".mp4", ".mov", ".m4v", ".mkv", ".avi"].contains(where: { lower.hasSuffix($0) }) {
             icon = .video
         } else if FileManager.default.fileExists(atPath: raw) {
             var isDir: ObjCBool = false
@@ -151,7 +152,6 @@ struct FileLinkDialog: View {
         panel.canChooseFiles = true
         panel.canChooseDirectories = true
         panel.allowsMultipleSelection = false
-
         if panel.runModal() == .OK, let url = panel.url {
             path = url.path
             if title.isEmpty {
@@ -163,24 +163,30 @@ struct FileLinkDialog: View {
 
 // MARK: - Sheet-Wrapper
 
-/// Präsentiert den Dialog als Sheet.
-struct FileLinkDialogSheet: View {
-    @Binding var isPresented: Bool
-    var onSave: (_ title: String, _ path: String, _ icon: FileTypeIcon) -> Void
+public struct FileLinkDialogSheet: View {
+    @Binding public var isPresented: Bool
+    public var initialTitle: String
+    public var initialPath: String
+    public var onSave: (String, String, FileTypeIcon) -> Void
 
-    var body: some View {
-        FileLinkDialog(isPresented: $isPresented, onSave: onSave)
+    public init(
+        isPresented: Binding<Bool>,
+        initialTitle: String = "",
+        initialPath: String = "",
+        onSave: @escaping (String, String, FileTypeIcon) -> Void
+    ) {
+        self._isPresented = isPresented
+        self.initialTitle = initialTitle
+        self.initialPath = initialPath
+        self.onSave = onSave
     }
-}
 
-#Preview("FileLinkDialog") {
-    struct PreviewWrapper: View {
-        @State private var show = true
-        var body: some View {
-            FileLinkDialogSheet(isPresented: $show) { title, path, icon in
-                print("Saved: \(title) — \(path) — \(icon)")
-            }
-        }
+    public var body: some View {
+        FileLinkDialog(
+            isPresented: $isPresented,
+            initialTitle: initialTitle,
+            initialPath: initialPath,
+            onSave: onSave
+        )
     }
-    return PreviewWrapper()
 }

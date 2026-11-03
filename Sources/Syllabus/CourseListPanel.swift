@@ -13,7 +13,9 @@ public struct CourseListPanel: View {
     @Binding public var selection: Set<UUID>      // ← war: UUID?
     public var isEditMode: Bool
     public var onAdd: (String) -> Void
+    public var onPickUniversityRoot: () -> Void
     public var onEditAction: (EditAction) -> Void
+   
 
     public init(
         courses: [Course],
@@ -21,6 +23,7 @@ public struct CourseListPanel: View {
         selection: Binding<Set<UUID>>,             // ← war: Binding<UUID?>
         isEditMode: Bool = false,
         onAdd: @escaping (String) -> Void,
+        onPickUniversityRoot: @escaping () -> Void = { },
         onEditAction: @escaping (EditAction) -> Void = { _ in },
     ) {
         self.courses = courses
@@ -28,6 +31,7 @@ public struct CourseListPanel: View {
         self._selection = selection
         self.isEditMode = isEditMode
         self.onAdd = onAdd
+        self.onPickUniversityRoot = onPickUniversityRoot
         self.onEditAction = onEditAction
     }
 
@@ -35,12 +39,7 @@ public struct CourseListPanel: View {
         VStack(spacing: 0) {
             Group {
                 if courses.isEmpty {
-                    EmptyStateView(
-                        icon: "books.vertical",
-                        title: "Keine Kurse",
-                        message: "Lege deinen ersten Kurs an."
-                    )
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    emptyState
                 } else {
                     List(selection: $selection) {
                         ForEach(courses) { course in
@@ -81,6 +80,34 @@ public struct CourseListPanel: View {
         }
         .background(BasiliskColor.background)
         .animation(.easeInOut(duration: 0.2), value: isEditMode)
+    }
+    private var emptyState: some View {
+        VStack(spacing: BasiliskSpacing.lg) {
+            Spacer()
+
+            Image(systemName: "books.vertical")
+                .font(.system(size: 42, weight: .light))
+                .foregroundStyle(BasiliskColor.textMuted)
+
+            Text("Keine Kurse")
+                .font(BasiliskFont.sectionTitle)
+                .foregroundStyle(BasiliskColor.text)
+
+            Text("Wähle einen Ordner für deine aktuellen Kurse aus.")
+                .font(BasiliskFont.body)
+                .foregroundStyle(BasiliskColor.textMuted)
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, BasiliskSpacing.lg)
+
+            PrimaryButton("Ordner wählen", icon: "folder") {
+                onPickUniversityRoot()
+            }
+            .padding(.top, BasiliskSpacing.sm)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     

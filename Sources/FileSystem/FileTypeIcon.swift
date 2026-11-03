@@ -16,7 +16,7 @@
 
 import SwiftUI
 
-enum FileTypeIcon: Hashable {
+public enum FileTypeIcon: String, Hashable, CaseIterable {
     case folder
     case video
     case document

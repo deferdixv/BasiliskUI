@@ -25,6 +25,9 @@ public struct SyllabusView: View {
     public let isEditMode: Bool
 
     public var onAddCourse: (String) -> Void
+    
+    public var onPickUniversityRoot: () -> Void
+    
     public var onAddChapter: (String, UUID) -> Void
     public var onAddPart: (UUID) -> Void
     public var onAddSubchapter: (String, UUID) -> Void
@@ -40,6 +43,11 @@ public struct SyllabusView: View {
     
     public var onDeleteStep: (Step) -> Void
     public var onUpdateStepNotes: (Step, String) -> Void
+    
+    public var onAddFileLink: (String, URL, UUID) -> Void
+    public var onDeleteFileLink: (FileLinkItem) -> Void
+    
+    
 
     // MARK: - Layout State
 
@@ -61,6 +69,7 @@ public struct SyllabusView: View {
         selectedPartIDs: Binding<Set<UUID>>,
         isEditMode: Bool = false,
         onAddCourse: @escaping (String) -> Void,
+        onPickUniversityRoot: @escaping () -> Void,
         onAddChapter: @escaping (String, UUID) -> Void,
         onAddPart: @escaping (UUID) -> Void,
         onAddSubchapter: @escaping (String, UUID) -> Void,
@@ -72,7 +81,9 @@ public struct SyllabusView: View {
         onPickCourseFolder: @escaping (Course) -> Void,
         onRevealChapterInFinder: @escaping (Chapter, Course) -> Void,
         onDeleteStep: @escaping (Step) -> Void,
-        onUpdateStepNotes: @escaping (Step, String) -> Void
+        onUpdateStepNotes: @escaping (Step, String) -> Void,
+        onAddFileLink: @escaping (String, URL, UUID) -> Void,
+        onDeleteFileLink: @escaping (FileLinkItem) -> Void,
     ) {
         self.courses = courses
         self.parts = parts
@@ -85,6 +96,7 @@ public struct SyllabusView: View {
         self._selectedPartIDs = selectedPartIDs
         self.isEditMode = isEditMode
         self.onAddCourse = onAddCourse
+        self.onPickUniversityRoot = onPickUniversityRoot
         self.onAddChapter = onAddChapter
         self.onAddPart = onAddPart
         self.onAddSubchapter = onAddSubchapter
@@ -97,6 +109,8 @@ public struct SyllabusView: View {
         self.onRevealChapterInFinder = onRevealChapterInFinder
         self.onDeleteStep = onDeleteStep
         self.onUpdateStepNotes = onUpdateStepNotes
+        self.onAddFileLink = onAddFileLink
+        self.onDeleteFileLink = onDeleteFileLink
     }
 
     // MARK: - Derived
@@ -151,7 +165,8 @@ public struct SyllabusView: View {
                         selection: $selectedCourseIDs,
                         isEditMode: isEditMode,
                         onAdd: { title in onAddCourse(title) },
-                        onEditAction: onEditAction
+                        onPickUniversityRoot: onPickUniversityRoot,
+                        onEditAction: onEditAction,
                         
                     )
                 },
@@ -204,8 +219,10 @@ public struct SyllabusView: View {
                         onRevealChapterInFinder(chapter, course)
                     }
                 },
+                onAddFileLink: onAddFileLink,
                 onDeleteStep: onDeleteStep,
-                onUpdateStepNotes: onUpdateStepNotes
+                onUpdateStepNotes: onUpdateStepNotes,
+                onDeleteFileLink: onDeleteFileLink
             )
         } else if let part = selectedPart {
             PartDetailPanel(part: part, isEditMode: isEditMode)
