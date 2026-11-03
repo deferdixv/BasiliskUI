@@ -1,0 +1,46 @@
+//
+//  BasiliskLayout.swift
+//  BasiliskDesign
+//
+
+import SwiftUI
+
+enum BasiliskLayout {
+
+    // MARK: Fenster
+    static let windowMinHeight: CGFloat = 620
+
+    // MARK: Detailbereich (Syllabus)
+    static let detailOuterPadding: CGFloat = 6
+
+    // MARK: PlanView
+    /// Abstand vom Divider zur Content-Spalte
+    static let planContentInnerPadding: CGFloat = 6
+    /// Abstand vom Divider zur Panel-Spalte
+    static let planPanelInnerPadding: CGFloat = 6
+    /// Äußerer Rand der PlanView zum Fensterrand
+    static let planOuterPadding: CGFloat = 6
+
+    // MARK: Spalten-Verhältnis (Syllabus)
+    static let columnRatio: (course: CGFloat, chapter: CGFloat, detail: CGFloat) = (1.0, 1.3, 2.4)
+
+    static func initialColumnWidths(
+        totalWidth: CGFloat,
+        dividerWidth: CGFloat = 12
+    ) -> (course: CGFloat, chapter: CGFloat, detail: CGFloat) {
+        let available = totalWidth - dividerWidth
+        let sum = columnRatio.course + columnRatio.chapter + columnRatio.detail
+        return (
+            course:  available * (columnRatio.course / sum),
+            chapter: available * (columnRatio.chapter / sum),
+            detail:  available * (columnRatio.detail / sum)
+        )
+    }
+
+    // MARK: Syllabus-Spalten Min/Max
+    static let courseMinWidth: CGFloat = 140
+    static let courseMaxWidth: CGFloat = 400
+    static let chapterMinWidth: CGFloat = 160
+    static let chapterMaxWidth: CGFloat = 500
+    static let detailMinWidth: CGFloat = 400
+}

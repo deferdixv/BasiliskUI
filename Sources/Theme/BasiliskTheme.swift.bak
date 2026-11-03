@@ -1,0 +1,118 @@
+//
+//  BasiliskTheme.swift
+//  BasiliskDesign
+//
+//  Zentrale Design-Konstanten für Basilisk.
+//  Einzige Quelle der Wahrheit für Farben, Spacing, Radii und Typografie.
+//
+
+import SwiftUI
+
+
+
+// MARK: - Farben
+
+enum BasiliskColor {
+    // MARK: Marke
+    /// Türkisgrün aus dem Logo — Primärakzent.
+    static let brand = Color(red: 86 / 255.0,
+                             green: 181 / 255.0,
+                             blue: 154 / 255.0)
+
+    /// Pergament — Hintergrund für Cards und Material.
+    // MARK: Pergament — drei abgestimmte Stufen
+    //
+
+    /// Kräftig und warm — **Standard für alle Cards und Material**.
+    static let parchment = Color(red: 0xE8 / 255.0,
+                                 green: 0xD4 / 255.0,
+                                 blue: 0xB8 / 255.0)
+    /// Gold-Akzent aus dem Logo — für Highlights, Badges, ausgewählte Icons.
+    static let gold = Color(red: 0xD4 / 255.0,
+                            green: 0xA8 / 255.0,
+                            blue: 0x4A / 255.0)
+
+    // MARK: Semantik
+    static let background = Color(nsColor: .windowBackgroundColor)
+    static let surface    = Color(nsColor: .controlBackgroundColor)
+    static let border     = Color.primary.opacity(0.08)
+
+    // MARK: Text
+
+    /// Haupttext — etwas weicher als reines Schwarz, wirkt auf Pergament ruhiger.
+    static let text = Color(red: 0.20, green: 0.18, blue: 0.15)
+
+    /// Sekundärtext — Labels, Fließtext in Cards.
+    static let textMuted = Color(red: 0.38, green: 0.34, blue: 0.29)
+
+    /// Tertiärtext — Captions, Hinweise.
+    static let textSubtle = Color(red: 0.52, green: 0.47, blue: 0.40)
+
+
+    // MARK: Status
+    static let success = Color.green
+    static let warning = Color.orange
+    static let danger  = Color.red
+
+    // MARK: Dateitypen (Syllabus)
+    static let fileFolder  = brand
+    static let fileVideo   = Color(red: 0x3B / 255.0, green: 0x82 / 255.0, blue: 0xC4 / 255.0)
+    static let fileDocument = Color(red: 0xE6 / 255.0, green: 0x9A / 255.0, blue: 0x2E / 255.0)
+    static let fileLink    = Color(nsColor: .tertiaryLabelColor)
+    static let fileUnknown = brand.opacity(0.4)
+    
+}
+
+// MARK: - Spacing
+
+enum BasiliskSpacing {
+    static let xs: CGFloat  = 4
+    static let sm: CGFloat  = 8
+    static let md: CGFloat  = 12
+    static let lg: CGFloat  = 16
+    static let xl: CGFloat  = 24
+    static let xxl: CGFloat = 32
+}
+
+// MARK: - Radii
+
+enum BasiliskRadius {
+    static let sm: CGFloat  = 6
+    static let md: CGFloat  = 10
+    static let lg: CGFloat  = 16
+    static let xl: CGFloat  = 22
+}
+
+// MARK: - Typografie
+
+enum BasiliskFont {
+    
+    static let serifPostScriptName = "SwiftNeueLTPro-BlackCond"
+    /// Serifenschrift für Überschriften (Wortmarke, Seitentitel, Karten-Header).
+    static func serif(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .custom(serifPostScriptName, size: size)
+            .weight(weight)
+    }
+
+    /// Systemschrift für Fließtext, Labels, Buttons.
+    static func standard(_ size: CGFloat, weight: Font.Weight = .regular) -> Font {
+        .system(size: size, weight: weight, design: .default)
+    }
+
+    /// Kurzschreibweise für die häufigsten Größen.
+    static let cardTitle    = standard(15, weight: .semibold)
+    static let sectionTitle = serif(18, weight: .bold)
+    static let pageTitle    = serif(28, weight: .bold)
+    static let body         = standard(13)
+    static let caption      = standard(11)
+}
+
+
+// MARK: - Schatten
+
+extension View {
+    /// Standard-Schatten für Cards und Material.
+    func basiliskShadow() -> some View {
+        self.shadow(color: .black.opacity(0.06), radius: 6, x: 0, y: 2)
+    }
+}
